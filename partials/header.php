@@ -4,7 +4,6 @@
             <div class="flex items-center justify-start w-2/4 md:w-1/4 h-full pr-4">
                 <a href="<?php echo ($base_url) ?>" class="flex items-center py-4 space-x-2 font-extrabold text-gray-900 md:py-0">
                     <span class="flex items-center justify-center w-8 h-8 text-white bg-gray-900 rounded-full">
-
                         <img src="<?php echo('assets/imgs/logo.png') ?>" alt="PantherPHP Logo" class="w-auto h-7 -translate-y-px">
                     </span>
                     <span><?php echo($project_name) ?></span>
@@ -14,9 +13,7 @@
                 <div class="flex-col w-full h-auto overflow-hidden bg-white rounded-lg md:bg-transparent md:overflow-visible md:rounded-none md:relative md:flex md:flex-row">
                     <a href="#_" class="inline-flex items-center block w-auto h-16 px-6 space-x-2 font-black leading-none text-gray-900 md:hidden">
                         <span class="flex items-center justify-center w-8 h-8 text-white bg-gray-900 rounded-full">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-auto h-5 -translate-y-px" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" />
-                            </svg>
+                        <img src="<?php echo('assets/imgs/logo.png') ?>" alt="PantherPHP Logo" class="w-auto h-7 -translate-y-px">
                         </span>
                         <span><?php echo($project_name) ?></span>
                     </a>
