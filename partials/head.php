@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-    <link href="assets/css/output.css" rel="stylesheet">    
+    <link href="<?php echo($base_url) ?>assets/css/output.css" rel="stylesheet">    
 
     <!-- Primary Meta Tags -->
     <title><?php echo htmlspecialchars($meta_title); ?></title>

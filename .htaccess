@@ -1,0 +1,6 @@
+RewriteEngine On
+# If the requested filename exists, simply serve it.
+# We only want to send non-existing file or directory requests to index.php.
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.php [L]

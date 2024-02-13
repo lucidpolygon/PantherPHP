@@ -1,4 +1,4 @@
-# KaduvaPHP - Light and Fast PHP Boilerplate for your next website.
+# PantherPHP - Light and Fast PHP Boilerplate for your next website.
 
 ## Overview
 
