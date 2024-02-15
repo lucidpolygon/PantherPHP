@@ -1,8 +1,8 @@
-# PantherPHP - Light and Fast PHP Boilerplate for your next website.
+# Minimal PHP Boilerplate for your next website.
 
 ## Overview
 
-A lightweight PHP boilerplate for building websites. Features dynamic content loading, SEO optimization capabilities, and Tailwind CSS integration for styling.
+A minmal PHP boilerplate for building websites. Features dynamic content loading, SEO optimization capabilities, and Tailwind CSS integration for styling.
 
 Simply populate the content directory with your files and deploy the entire folder to your hosting environment via FTP. Boom! website is live. 
 
