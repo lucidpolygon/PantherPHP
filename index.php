@@ -1,9 +1,9 @@
 <?php
 
 // Project configuration settings
-$project_name = "Panther PHP";
-$meta_title = "PantherPHP - Fast and Light Boilerplate";
-$meta_description = "Fast, lightweight PHP boilerplate for efficient web development. Ideal for performance-focused projects.";
+$project_name = "PHP Boilerplate";
+$meta_title = "PHP Boilerplate";
+$meta_description = "PHP Boilerplate.";
 $base_url = 'http://localhost:8000/';
 $og_image_url = "assets/imgs/og-image.png";
 

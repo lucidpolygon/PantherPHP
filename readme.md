@@ -6,9 +6,6 @@ A lightweight PHP boilerplate for building websites. Features dynamic content lo
 
 Simply populate the content directory with your files and deploy the entire folder to your hosting environment via FTP. Boom! website is live. 
 
-Built by [Thaha](https://twitter.com/TheHighSecond). If you find this project useful, please consider starring it on GitHub to show your support.
-
-
 ## Structure
 
 - `content/`: Add new `.php` pages here.
