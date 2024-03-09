@@ -12,6 +12,11 @@ $meta_description = $_ENV['META_DESCRIPTION'];
 $og_image_url = $_ENV['OG_IMAGE_URL'];
 $no_index = false;
 
+// Detect and handle form submission
+if (isset($_POST['submit'])) {
+    handleFormSubmission(); 
+}
+
 // Establishing the base path for consistent file inclusion
 define('BASE_PATH', realpath(__DIR__));
 list($base_url, $current_url) = getUrlInfo();

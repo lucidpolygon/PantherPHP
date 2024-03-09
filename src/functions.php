@@ -38,3 +38,40 @@ function getContentFilePath()
     }
     return $contentFilePath;
 }
+
+//Handle Newsletter signups and Contact Submissions
+function handleFormSubmission() {
+    $formType = isset($_POST['form_type']) ? htmlspecialchars($_POST['form_type']) : '';
+    $name = isset($_POST['name']) ? htmlspecialchars($_POST['name']) : '';
+    $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
+    $message = isset($_POST['message']) ? htmlspecialchars($_POST['message']) : '';
+    $errors = [];
+    $redirectTo = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '/'; // Fallback to home if HTTP_REFERER not set
+    // Validate based on form type
+    if ($formType === 'newsletter') {
+        if (!$email) $errors[] = 'Email is required for newsletter sign-up.';
+    } elseif ($formType === 'contact') {
+        if (!$name) $errors[] = 'Name is required for contact form.';
+        if (!$email) $errors[] = 'Email is required for contact form.';
+        if (!$message) $errors[] = 'Message is required for contact form.';
+    } else {
+        $errors[] = 'Invalid form type submitted.';
+    }
+
+    if (empty($errors)) {
+        $to = 'thaha@lucidpolygon.com';
+        $subject = $formType === 'newsletter' ? 'Newsletter Sign-up' : 'Contact Form Submission';
+        $body = $formType === 'newsletter' ? "Newsletter sign-up from: $name <$email>" : "Name: $name\nEmail: $email\nMessage: $message";
+        $headers = "From: $email";
+        mail($to, $subject, $body, $headers); // Ensure your server is configured to send mail
+
+        // Redirect back with success
+        header('Location: ' . $redirectTo . '?success=1');
+        exit;
+    } else {
+        // Redirect back with errors
+        $query = http_build_query(['errors' => $errors]);
+        header('Location: ' . $redirectTo . '?' . $query);
+        exit;
+    }
+}
