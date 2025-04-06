@@ -30,6 +30,18 @@
     <meta name="twitter:description" content="<?php echo htmlspecialchars($meta_description); ?>" />
     <meta name="twitter:image" content="<?php echo isset($og_image_url) ? htmlspecialchars($base_url.$og_image_url) : ''; ?>" />
 
+    <!-- CSS & JS -->
+    <link href="/assets/css/output.css" rel="stylesheet">
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo ($ga4_id) ?>"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date()); 
+      gtag('config', '<?php echo ($ga4_id) ?>');
+    </script>
+
 </head>
 
 <body>

@@ -26,9 +26,34 @@ function getUrlInfo()
 }
 
 // Determine and return the content file path based on the request
-function getContentFilePath()
+function handleRoutes()
 {
-    list($requestPath) = explode('?', trim($_SERVER['REQUEST_URI'], '/'), 2);
+    // Parsing the request URI to identify the requested path
+    $requestPath = trim($_SERVER['REQUEST_URI'], '/');
+
+    // Check for the sitemap generation route
+    if ($requestPath === 'generate-sitemap') {
+        generateSitemap();
+        if (!empty($_SERVER['HTTP_REFERER'])) {
+            header('Location: ' . $_SERVER['HTTP_REFERER']);
+        } else {
+            header('Location: /');
+        }
+        exit('Sitemap generated successfully.');
+    }
+
+    // Check for AJAX newsletter request
+    if ($requestPath === 'newsletter-submit' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+        // handleNewsletterAjaxRequest();
+        exit;
+    }
+
+    // Check for AJAX contact form request
+    if ($requestPath === 'contact-submit' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+        // handleContactAjaxRequest();
+        exit;
+    }
+
     $requestPath = empty($requestPath) ? 'home' : $requestPath;
     $contentFilePath = 'content/';
     $pathParts = explode('/', $requestPath);
@@ -37,6 +62,49 @@ function getContentFilePath()
         $contentFilePath .= ($index < count($pathParts) - 1) ? '/' : (is_dir($contentFilePath) ? '/index.php' : '.php');
     }
     return $contentFilePath;
+}
+
+// Generate Sitemap and save it to the main directory
+function generateSitemap()
+{
+    // Determine the base URL for the sitemap
+    list($base_url, ) = getUrlInfo();
+    
+    // Initialize the XML structure for the sitemap
+    $sitemap = new SimpleXMLElement('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"/>');
+
+    // Add the homepage to the sitemap
+    $homepageUrl = rtrim($base_url, '/');
+    $homepageElement = $sitemap->addChild('url');
+    $homepageElement->addChild('loc', htmlspecialchars($homepageUrl));
+    $homepageElement->addChild('lastmod', date('c')); // Use the current date for the homepage
+    $homepageElement->addChild('changefreq', 'daily'); // Typically, the homepage is updated frequently
+    $homepageElement->addChild('priority', '1.0'); // Highest priority
+    
+    // Recursively iterate through the content directory
+    $directory = new RecursiveDirectoryIterator(BASE_PATH . '/content');
+    $iterator = new RecursiveIteratorIterator($directory);
+
+    foreach ($iterator as $file) {
+        if ($file->isFile() && $file->getExtension() === 'php') {
+            $relativePath = str_replace(BASE_PATH . '/content/', '', $file->getPathname());
+            $relativePath = str_replace('.php', '', $relativePath);
+
+            // Convert the relative path to a URL
+            $url = rtrim($base_url, '/') . '/' . ltrim($relativePath, '/');
+            
+            // Add the URL to the sitemap
+            $urlElement = $sitemap->addChild('url');
+            $urlElement->addChild('loc', htmlspecialchars($url));
+            $urlElement->addChild('lastmod', date('c', filemtime($file->getPathname())));
+            $urlElement->addChild('changefreq', 'monthly');
+            $urlElement->addChild('priority', '0.5');
+        }
+    }
+
+    // Save the sitemap XML to the main directory
+    $sitemapFilePath = BASE_PATH . '/sitemap.xml';
+    $sitemap->asXML($sitemapFilePath);
 }
 
 //Handle Newsletter signups and Contact Submissions
@@ -59,7 +127,7 @@ function handleFormSubmission() {
     }
 
     if (empty($errors)) {
-        $to = 'thaha@lucidpolygon.com';
+        $to = 'xyz@abc.com';
         $subject = $formType === 'newsletter' ? 'Newsletter Sign-up' : 'Contact Form Submission';
         $body = $formType === 'newsletter' ? "Newsletter sign-up from: $name <$email>" : "Name: $name\nEmail: $email\nMessage: $message";
         $headers = "From: $email";
