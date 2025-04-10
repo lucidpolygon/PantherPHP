@@ -1,5 +1,26 @@
 <?php
 
+// Stack storage in global scope
+$_STACK = [];
+
+// Push content to a named stack (e.g., 'custom-js')
+function push_to_stack($stackName, $content) {
+    global $_STACK;
+    if (!isset($_STACK[$stackName])) {
+        $_STACK[$stackName] = [];
+    }
+    $_STACK[$stackName][] = $content;
+}
+
+// Render the contents of a named stack
+function render_stack($stackName) {
+    global $_STACK;
+    if (isset($_STACK[$stackName]) && !empty($_STACK[$stackName])) {
+        return implode("\n", $_STACK[$stackName]);
+    }
+    return '';
+}
+
 // Load environment variables and set them in the global scope
 function loadEnvVars($envPath)
 {

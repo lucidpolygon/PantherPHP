@@ -68,6 +68,7 @@
         });
     });
 </script>
+<?php echo render_stack('custom-js'); ?>
 
 </body>
 

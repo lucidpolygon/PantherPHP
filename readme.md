@@ -40,3 +40,18 @@ Fork, make your changes, and submit a pull request to contribute.
 ## License
 
 MIT License. Free for both personal and commercial use.
+
+
+
+push_to_stack('custom-css', '<link rel="stylesheet" href="/assets/css/about.css">');
+ or
+<?php
+// Push a multi-line script using heredoc
+$script = <<<EOT
+<script>
+    
+</script>
+EOT;
+
+push_to_stack('custom-js', $script);
+?>
