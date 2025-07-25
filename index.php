@@ -1,10 +1,12 @@
 <?php
 
+/*
 header("Content-Security-Policy: default-src 'self'; img-src *; script-src 'self' https://www.googletagmanager.com;");
 header("X-Content-Type-Options: nosniff");
 header("X-Frame-Options: DENY");
 header("Referrer-Policy: no-referrer");
 header("Strict-Transport-Security: max-age=31536000; includeSubDomains; preload");
+*/
 
 ini_set('error_log', __DIR__ . '/logs/errors.log');
 
@@ -23,9 +25,9 @@ $ga4_id = $_ENV['GA4_ID'];
 $website_url = $_ENV['WEBSITE_URL'];
 $no_index = false;
 
-// Detect and handle form submission
-if (isset($_POST['submit'])) {
-    handleFormSubmission(); 
+// Handle form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
+    handleFormSubmission();
 }
 
 // Establishing the base path for consistent file inclusion

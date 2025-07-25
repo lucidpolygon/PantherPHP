@@ -1,11 +1,16 @@
 RewriteEngine On
+
 # If the requested filename exists, simply serve it.
 # We only want to send non-existing file or directory requests to index.php.
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^ index.php [L]
 
-<Files .env>
-Order allow,deny
-Deny from all
-</Files>
+# Protect sensitive files explicitly
+<FilesMatch "^(\.env|\.gitignore|sitemap\.xml|package\.json|tailwind\.config\.js)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Block access to sensitive directories
+RedirectMatch 403 ^/(src|partials|content|logs|data)(/.*)?$

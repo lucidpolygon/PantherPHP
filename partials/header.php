@@ -4,7 +4,7 @@
             <div class="flex items-center justify-start w-2/4 md:w-1/4 h-full pr-4">
                 <a href="<?php echo ($base_url) ?>" class="flex items-center py-4 space-x-2 font-extrabold text-gray-900 md:py-0">
                     <span class="flex items-center justify-center w-8 h-8 text-white bg-gray-900 rounded-full">
-                        <img src="<?php echo('assets/imgs/logo.png') ?>" alt="PantherPHP Logo" class="w-auto h-7 -translate-y-px">
+                        <img src="<?php echo('/assets/imgs/logo.png') ?>" alt="PantherPHP Logo" class="w-auto h-7 -translate-y-px">
                     </span>
                     <span><?php echo($project_name) ?></span>
                 </a>
@@ -20,7 +20,7 @@
                     <div class="flex flex-col items-start justify-center w-full space-x-6 text-center lg:space-x-8 md:w-2/3 md:mt-0 md:flex-row md:items-center">
                         <a href="<?php echo ($base_url) . 'about' ?>" class="inline-block w-full py-2 mx-0 ml-6 font-medium text-left text-black md:ml-0 md:w-auto md:px-0 md:mx-2 lg:mx-3 md:text-center">About</a>
                         <a href="<?php echo ($base_url) . 'pricing' ?>" class="inline-block w-full py-2 mx-0 font-medium text-left text-gray-700 md:w-auto md:px-0 md:mx-2 hover:text-black lg:mx-3 md:text-center">Pricing</a>
-                        <a href="#_" class="inline-block w-full py-2 mx-0 font-medium text-left text-gray-700 md:w-auto md:px-0 md:mx-2 hover:text-black lg:mx-3 md:text-center">Blog</a>
+                        <a href="<?php echo ($base_url) . 'blog' ?>" class="inline-block w-full py-2 mx-0 font-medium text-left text-gray-700 md:w-auto md:px-0 md:mx-2 hover:text-black lg:mx-3 md:text-center">Blog</a>
                         <a href="<?php echo ($base_url) . 'contact' ?>" class="inline-block w-full py-2 mx-0 font-medium text-left text-gray-700 md:w-auto md:px-0 md:mx-2 hover:text-black lg:mx-3 md:text-center">Contact</a>
                     </div>
                     <div class="flex flex-col items-start justify-end w-full pt-4 md:items-center md:w-2/3 md:flex-row md:py-0">
