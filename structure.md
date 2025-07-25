@@ -18,7 +18,10 @@
 │   ├── head.php             # Head section with meta tags and SEO
 │   └── header.php           # Header section with navigation
 ├── src/                     # Core PHP functions
-│   └── functions.php        # Helper functions for routing, sitemap, and form handling
+│   ├── functions.php        # Helper functions for sitemap,loadEnvVars, and form handling
+    └── route.php.php        # Helper functions for routing
+├── data/                    # 
+│   └── redirect.json        # 
 ├── .env                     # Environment configuration file
 ├── .gitignore               # Git ignore rules
 ├── .htaccess                # Apache configuration for routing and security

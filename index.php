@@ -9,6 +9,7 @@ header("Strict-Transport-Security: max-age=31536000; includeSubDomains; preload"
 ini_set('error_log', __DIR__ . '/logs/errors.log');
 
 require_once __DIR__ . '/src/functions.php';
+require_once __DIR__ . '/src/route.php';
 
 $envPath = realpath(__DIR__ . '/.env');
 loadEnvVars($envPath);

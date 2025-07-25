@@ -36,55 +36,6 @@ function loadEnvVars($envPath)
     }
 }
 
-// Determining the protocol (HTTP or HTTPS) to ensure proper URL formation
-// Returns base URL and current URL
-function getUrlInfo()
-{
-    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
-    $base_url = $protocol . $_SERVER['HTTP_HOST'] . "/";
-    $current_url = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-    return [$base_url, $current_url];
-}
-
-// Determine and return the content file path based on the request
-function handleRoutes()
-{
-    // Parsing the request URI to identify the requested path
-    $requestPath = trim($_SERVER['REQUEST_URI'], '/');
-
-    // Check for the sitemap generation route
-    if ($requestPath === 'generate-sitemap') {
-        generateSitemap();
-        if (!empty($_SERVER['HTTP_REFERER'])) {
-            header('Location: ' . $_SERVER['HTTP_REFERER']);
-        } else {
-            header('Location: /');
-        }
-        exit('Sitemap generated successfully.');
-    }
-
-    // Check for AJAX newsletter request
-    if ($requestPath === 'newsletter-submit' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        // handleNewsletterAjaxRequest();
-        exit;
-    }
-
-    // Check for AJAX contact form request
-    if ($requestPath === 'contact-submit' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        // handleContactAjaxRequest();
-        exit;
-    }
-
-    $requestPath = empty($requestPath) ? 'home' : $requestPath;
-    $contentFilePath = 'content/';
-    $pathParts = explode('/', $requestPath);
-    foreach ($pathParts as $index => $part) {
-        $contentFilePath .= $part;
-        $contentFilePath .= ($index < count($pathParts) - 1) ? '/' : (is_dir($contentFilePath) ? '/index.php' : '.php');
-    }
-    return $contentFilePath;
-}
-
 // Generate Sitemap and save it to the main directory
 function generateSitemap()
 {
