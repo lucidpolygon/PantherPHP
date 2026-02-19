@@ -43,9 +43,9 @@ file_exists($page_path) ? include $page_path : include BASE_PATH . '/content/404
 $content = ob_get_clean();
 
 // Including template parts with dynamic content and titles
-include BASE_PATH.'/partials/head.php'; // Head section including meta tags and titles
-include BASE_PATH.'/partials/header.php'; // Site header
+include BASE_PATH.'/content/partials/head.php'; // Head section including meta tags and titles
+include BASE_PATH.'/content/partials/header.php'; // Site header
 echo $content; // Display the main content area
-include BASE_PATH.'/partials/footer.php'; // Site footer
+include BASE_PATH.'/content/partials/footer.php'; // Site footer
 
 ?>

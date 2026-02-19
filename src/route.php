@@ -75,6 +75,16 @@ function handleRoutes(): string
             continue;
         }
 
+        // Skip certain folders
+        $skipFolders = ['partials', 'draft'];
+        foreach ($skipFolders as $folder) {
+            if (str_starts_with($contentFilePath, $baseContentPath . $folder . '/')) {
+                http_response_code(404);
+                return $baseContentPath . '404.php';
+            }
+        }
+
+        // Check for direct file match
         $fullPath = BASE_PATH . '/' . $contentFilePath . '.php';
         if (file_exists($fullPath)) {
             return $contentFilePath . '.php';
@@ -91,6 +101,7 @@ function handleRoutes(): string
             break;
         }
     }
-
+    
+    http_response_code(404);
     return $baseContentPath . '404.php';
 }
