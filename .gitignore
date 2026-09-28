@@ -1,4 +1,22 @@
-**/*.DS_Store**
+# OS/system files
+.DS_Store
+**/.DS_Store
+Thumbs.db
+
+# Local config/secrets
+.env
+*.local
+
+# Dependencies/build artifacts
 **/node_modules/
-bin
+assets/css/output.css.map
+
+# Runtime/generated
+logs/
+errors.log
 sitemap.xml
+
+# Archives/temp
+*.zip
+trash/
+bin/

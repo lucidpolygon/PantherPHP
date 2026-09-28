@@ -1,57 +1,149 @@
-# Minimal PHP Boilerplate for your next website.
+# PantherPHP
 
-## Overview
+Minimal PHP boilerplate for small, fast, content-led websites.
 
-A minmal PHP boilerplate for building websites. Features dynamic content loading, SEO optimization capabilities, and Tailwind CSS integration for styling.
+This is designed for the kind of sites that do not need a framework: landing pages, brochure sites, simple blogs, service pages, and small content hubs that can be deployed to ordinary PHP hosting.
 
-Simply populate the content directory with your files and deploy the entire folder to your hosting environment via FTP. Boom! website is live. 
+## What it gives you
 
-## Structure
+- File-based routing from `/content/*.php`
+- Nested routes with `content/folder/index.php`
+- Shared partials for head/header/footer
+- Per-page meta title, description, canonical URL, OG image, and `noindex`
+- Tailwind CSS 4 build/watch scripts
+- Cache-busted CSS output via file modified time
+- Redirects from `data/redirects.json`
+- Sitemap generation at `/generate-sitemap`
+- Draft/private folder blocking, with optional preview token
+- Small helper stacks for per-page CSS/JS
+- Simple `.env` config with safe defaults
 
-- `content/`: Add new `.php` pages here.
-- `partials/`: Contains site-wide headers and footers.
-- `assets/css/`: Place Tailwind CSS input file here.
-- `assets/imgs/`: Place Images here.
+## Requirements
 
-## Setup
+- PHP 8+
+- Node.js/npm only if you want to rebuild Tailwind CSS
 
-1. **Clone or Download**: Get the boilerplate onto your local machine.
-2. **Add Pages**: Place new `.php` files within the `content/` directory.
-3. **Configure Project Settings**: Update the project-specific settings in `index.php`, including project name, base URL, and default meta tags.
-4. **Override Meta Tags**: In individual content files, specify custom `$meta_title`, `$meta_description`, and `$og_image_url` to tailor SEO for each page.
+## Quick start
 
+```bash
+cp .env.example .env
+npm install
+npm run build
+php -S localhost:8080
+```
 
-## SEO
+Open <http://localhost:8080>.
 
-Set unique meta tags for each page in its respective content file for better search engine visibility.
+## Project structure
+
+```text
+assets/
+  css/input.css       Tailwind source
+  css/output.css      Generated CSS
+  imgs/               Images and social previews
+content/
+  home.php            Homepage route `/`
+  about.php           `/about`
+  blog.php            `/blog`
+  blog/article1.php   `/blog/article1`
+  partials/           Shared template partials, not routable
+  draft/              Draft pages, blocked unless preview token is used
+data/
+  redirects.json      Redirect map
+  links.json          Named links helper data
+src/
+  functions.php       Helpers, env, sitemap, forms
+  route.php           Request routing
+index.php             Front controller
+```
+
+## Add a page
+
+Create `content/services.php`:
+
+```php
+<?php
+$meta_title = 'Services | ' . $project_name;
+$meta_description = 'What we can help with.';
+$og_image_url = 'assets/imgs/services-og.png';
+?>
+
+<main>
+  <h1>Services</h1>
+</main>
+```
+
+It is available at `/services`.
+
+For nested pages, create `content/services/audit.php` and visit `/services/audit`.
+
+## Per-page CSS or JS
+
+```php
+<?php
+push_to_stack('custom-css', '<link rel="stylesheet" href="/assets/css/services.css">');
+
+$script = <<<HTML
+<script>
+  console.log('Page script');
+</script>
+HTML;
+push_to_stack('custom-js', $script);
+?>
+```
+
+`custom-css` is rendered in the `<head>`. `custom-js` is rendered in `content/partials/footer.php`.
+
+## Redirects
+
+Edit `data/redirects.json`:
+
+```json
+{
+  "old-page": {
+    "to": "/new-page",
+    "status": 301
+  },
+  "temporary-offer": "/current-offer"
+}
+```
+
+Supported status codes: `301` and `302`.
+
+## Draft previews
+
+Files under `content/draft/` and `content/drafts/` are not public.
+
+Set `PREVIEW_TOKEN` in `.env`, then visit:
+
+```text
+/draft/my-page?preview=your-token
+```
+
+## Sitemap
+
+Visit `/generate-sitemap` to write `sitemap.xml`.
+
+The sitemap skips:
+
+- `content/partials/`
+- `content/draft/` and `content/drafts/`
+- `content/home.php` because it is represented by `/`
+- `content/404.php`
+- pages containing `$no_index = true;`
 
 ## Tailwind CSS
 
-Compile Tailwind CSS with:
-
+```bash
+npm run watch   # during development
+npm run build   # normal build
+npm run minify  # minified production CSS
 ```
-npx tailwindcss -i ./assets/css/input.css -o ./assets/css/output.css --watch
-```
 
-## Contributing
+## Deployment
 
-Fork, make your changes, and submit a pull request to contribute.
+Upload the project to any PHP-capable host. For production, copy `.env.example` to `.env`, set your real values, run `npm run minify`, and deploy the generated `assets/css/output.css` with the PHP files.
 
 ## License
 
-MIT License. Free for both personal and commercial use.
-
-
-
-push_to_stack('custom-css', '<link rel="stylesheet" href="/assets/css/about.css">');
- or
-<?php
-// Push a multi-line script using heredoc
-$script = <<<EOT
-<script>
-    
-</script>
-EOT;
-
-push_to_stack('custom-js', $script);
-?>
+MIT. Free for personal and commercial use.

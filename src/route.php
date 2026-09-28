@@ -4,14 +4,22 @@ declare(strict_types=1);
 
 /**
  * Get base URL and current URL with query parameters preserved.
+ * Supports reverse proxies/CDNs via X-Forwarded-* headers.
  *
  * @return array{string, string} [base_url, current_url]
  */
 function getUrlInfo(): array
 {
-    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? 'https://' : 'http://';
-    $baseUrl = $protocol . $_SERVER['HTTP_HOST'] . '/';
-    $currentUrl = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    $host = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? $_SERVER['HTTP_HOST'] ?? 'localhost';
+    $proto = $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? null;
+    $protocol = $proto
+        ? $proto . '://'
+        : (((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (($_SERVER['SERVER_PORT'] ?? null) == 443)) ? 'https://' : 'http://');
+
+    $requestUri = $_SERVER['REQUEST_URI'] ?? '/';
+    $baseUrl = $protocol . $host . '/';
+    $currentUrl = $protocol . $host . $requestUri;
+
     return [$baseUrl, $currentUrl];
 }
 
@@ -22,10 +30,11 @@ function getUrlInfo(): array
  */
 function parseRequest(): array
 {
-    $requestUri = trim($_SERVER['REQUEST_URI'], '/');
-    $parts = parse_url($requestUri);
-    $path = $parts['path'] ?? '';
-    parse_str($parts['query'] ?? '', $queryParams);
+    $requestUri = trim($_SERVER['REQUEST_URI'] ?? '/', '/');
+    $parts = parse_url($requestUri) ?: [];
+    $path = trim((string) ($parts['path'] ?? ''), '/');
+    parse_str((string) ($parts['query'] ?? ''), $queryParams);
+
     return [$path, $queryParams];
 }
 
@@ -38,17 +47,29 @@ function handleRoutes(): string
 {
     [$requestPath, $queryParams] = parseRequest();
     $baseContentPath = 'content/';
+    $previewToken = $_ENV['PREVIEW_TOKEN'] ?? '';
+    $isPreviewRequest = isset($queryParams['preview'])
+        && $previewToken !== ''
+        && hash_equals($previewToken, (string) $queryParams['preview']);
 
-    // Make query parameters globally accessible if needed (optional, adjust as per use case)
-    define('QUERY_PARAMS', $queryParams);
+    if (!defined('QUERY_PARAMS')) {
+        define('QUERY_PARAMS', $queryParams);
+    }
 
-    // Load redirects from JSON
+    // Load redirects from JSON. Supports both:
+    // {"old-path": "/new-path"} and {"old-path": {"to": "/new-path", "status": 301}}
     $redirectFile = BASE_PATH . '/data/redirects.json';
     if (file_exists($redirectFile)) {
-        $redirects = json_decode(file_get_contents($redirectFile), true);
-        if (is_array($redirects) && isset($redirects[$requestPath])) {
-            header('Location: ' . $redirects[$requestPath], true, 302);
-            exit;
+        $redirects = json_decode((string) file_get_contents($redirectFile), true);
+        if (is_array($redirects) && array_key_exists($requestPath, $redirects)) {
+            $redirect = $redirects[$requestPath];
+            $redirectTo = is_array($redirect) ? ($redirect['to'] ?? null) : $redirect;
+            $statusCode = is_array($redirect) ? (int) ($redirect['status'] ?? 302) : 302;
+
+            if (is_string($redirectTo) && in_array($statusCode, [301, 302], true)) {
+                header('Location: ' . $redirectTo, true, $statusCode);
+                exit;
+            }
         }
     }
 
@@ -61,11 +82,17 @@ function handleRoutes(): string
     }
 
     // Default to 'home' if no path
-    $requestPath = empty($requestPath) ? 'home' : $requestPath;
-    $pathParts = explode('/', $requestPath);
+    $requestPath = $requestPath === '' ? 'home' : $requestPath;
+
+    // Keep route resolution inside /content.
+    if (str_contains($requestPath, '..') || str_starts_with($requestPath, '.') || str_contains($requestPath, "\0")) {
+        http_response_code(404);
+        return $baseContentPath . '404.php';
+    }
+
+    $pathParts = array_values(array_filter(explode('/', $requestPath), static fn ($part) => $part !== ''));
     $contentFilePath = $baseContentPath;
 
-    // Build the file path incrementally
     foreach ($pathParts as $index => $part) {
         $contentFilePath .= $part;
         $isLastPart = $index === count($pathParts) - 1;
@@ -75,33 +102,32 @@ function handleRoutes(): string
             continue;
         }
 
-        // Skip certain folders
-        $skipFolders = ['partials', 'draft'];
-        foreach ($skipFolders as $folder) {
+        // Do not expose internal folders unless a valid draft preview token is supplied.
+        foreach (['partials', 'draft', 'drafts'] as $folder) {
             if (str_starts_with($contentFilePath, $baseContentPath . $folder . '/')) {
+                if (in_array($folder, ['draft', 'drafts'], true) && $isPreviewRequest) {
+                    continue;
+                }
                 http_response_code(404);
                 return $baseContentPath . '404.php';
             }
         }
 
-        // Check for direct file match
         $fullPath = BASE_PATH . '/' . $contentFilePath . '.php';
         if (file_exists($fullPath)) {
             return $contentFilePath . '.php';
         }
 
-        // Check for index.php in a directory
         $indexPath = BASE_PATH . '/' . $contentFilePath . '/index.php';
         if (is_dir(BASE_PATH . '/' . $contentFilePath) && file_exists($indexPath)) {
             return $contentFilePath . '/index.php';
         }
 
-        // If no match and it's the last part, stop and fallback
         if ($isLastPart) {
             break;
         }
     }
-    
+
     http_response_code(404);
     return $baseContentPath . '404.php';
 }
